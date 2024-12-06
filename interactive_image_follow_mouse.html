@@ -1,0 +1,105 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Image on Hover</title>
+    <style>
+        /* 主图片样式 */
+        .image-container img {
+            display: block;
+            width: 100%;
+            max-width: 1267px; /* 图片实际宽度 */
+            cursor: pointer;
+        }
+
+        /* 鼠标旁边的弹窗图片样式 */
+        .hover-popup {
+            display: none; /* 默认隐藏 */
+            position: absolute;
+            z-index: 1000;
+            pointer-events: none; /* 使其不干扰鼠标事件 */
+            max-width: 300px; /* 控制弹窗图片最大宽度 */
+            border: 2px solid #ccc;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="image-container">
+        <!-- 主图片 -->
+        <img id="main-image" 
+             src="https://myanmarcan.wordpress.com/wp-content/uploads/2024/10/nyaung-u-activities-conceptual-final-1.png" 
+             alt="Main Image">
+    </div>
+
+    <!-- 鼠标旁边的弹窗图片 -->
+    <img id="hover-popup" class="hover-popup" src="#" alt="Hover Popup Image">
+
+    <script>
+        // 获取主图片和弹窗元素
+        const mainImage = document.getElementById('main-image');
+        const hoverPopup = document.getElementById('hover-popup');
+
+        // 定义区域和对应的链接、弹窗图片
+        const hoverZones = [
+            {
+                threshold: 0.5, // 左边二分之一
+                image: "https://myanmarcan.wordpress.com/wp-content/uploads/2024/10/ponds-1.jpg",
+                link: "https://myanmarcan.wordpress.com/pond-renovation/"
+            },
+            {
+                threshold: 0.75, // 左边四分之三
+                image: "https://myanmarcan.wordpress.com/wp-content/uploads/2024/10/solar-park.png",
+                link: "https://myanmarcan.wordpress.com/solar-energy"
+            },
+            {
+                threshold: 1.0, // 最右边四分之一
+                image: "https://myanmarcan.wordpress.com/wp-content/uploads/2024/10/1719389314tametotto-edited.jpg",
+                link: "https://myanmarcan.wordpress.com/rainwater-harvesting"
+            }
+        ];
+
+        // 鼠标移动到主图片时
+        mainImage.addEventListener('mousemove', (event) => {
+            const imageRect = mainImage.getBoundingClientRect();
+            const hoverX = event.clientX - imageRect.left; // 鼠标相对于图片的 X 坐标
+            const imageWidth = imageRect.width;
+
+            // 计算鼠标位置比例
+            const hoverRatio = hoverX / imageWidth;
+
+            // 根据比例判断当前区域
+            let selectedZone = null;
+            for (const zone of hoverZones) {
+                if (hoverRatio <= zone.threshold) {
+                    selectedZone = zone;
+                    break;
+                }
+            }
+
+            if (selectedZone) {
+                // 显示对应弹窗图片
+                hoverPopup.src = selectedZone.image;
+                hoverPopup.style.display = 'block'; // 显示弹窗
+                hoverPopup.style.top = `${event.clientY + 10}px`; // 设置弹窗位置
+                hoverPopup.style.left = `${event.clientX + 10}px`; // 设置弹窗位置
+
+                // 设置主图片的点击链接
+                mainImage.style.cursor = 'pointer';
+                mainImage.onclick = () => {
+                    window.location.href = selectedZone.link;
+                };
+            }
+        });
+
+        // 鼠标移出主图片时隐藏弹窗
+        mainImage.addEventListener('mouseleave', () => {
+            hoverPopup.style.display = 'none'; // 隐藏弹窗
+            mainImage.style.cursor = 'default'; // 恢复鼠标样式
+            mainImage.onclick = null; // 移除点击事件
+        });
+    </script>
+</body>
+</html>
