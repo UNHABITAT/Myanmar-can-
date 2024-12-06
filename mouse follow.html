@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Image on Hover</title>
+    <style>
+        /* Style for the main image */
+        .image-container img {
+            display: block;
+            width: 100%;
+            max-width: 1267px; /* Actual width of the image */
+            cursor: pointer;
+        }
+
+        /* Style for the hover popup image near the mouse */
+        .hover-popup {
+            display: none; /* Hidden by default */
+            position: absolute;
+            z-index: 1000;
+            pointer-events: none; /* Makes it non-interfering with mouse events */
+            max-width: 300px; /* Maximum width of the popup image */
+            border: 2px solid #ccc;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="image-container">
+        <!-- Main image -->
+        <img id="main-image" 
+             src="https://myanmarcan.wordpress.com/wp-content/uploads/2024/10/nyaung-u-activities-conceptual-final-1.png" 
+             alt="Main Image">
+    </div>
+
+    <!-- Hover popup image near the mouse -->
+    <img id="hover-popup" class="hover-popup" src="#" alt="Hover Popup Image">
+
+    <script>
+        // Get the main image and popup elements
+        const mainImage = document.getElementById('main-image');
+        const hoverPopup = document.getElementById('hover-popup');
+
+        // Define areas with corresponding links and popup images
+        const hoverZones = [
+            {
+                threshold: 0.5, // Left half
+                image: "https://myanmarcan.wordpress.com/wp-content/uploads/2024/10/ponds-1.jpg",
+                link: "https://myanmarcan.wordpress.com/pond-renovation/"
+            },
+            {
+                threshold: 0.75, // Left three-quarters
+                image: "https://myanmarcan.wordpress.com/wp-content/uploads/2024/10/solar-park.png",
+                link: "https://myanmarcan.wordpress.com/solar-energy"
+            },
+            {
+                threshold: 1.0, // Rightmost quarter
+                image: "https://myanmarcan.wordpress.com/wp-content/uploads/2024/10/1719389314tametotto-edited.jpg",
+                link: "https://myanmarcan.wordpress.com/rainwater-harvesting"
+            }
+        ];
+
+        // When the mouse moves over the main image
+        mainImage.addEventListener('mousemove', (event) => {
+            const imageRect = mainImage.getBoundingClientRect();
+            const hoverX = event.clientX - imageRect.left; // X-coordinate of the mouse relative to the image
+            const imageWidth = imageRect.width;
+
+            // Calculate the mouse position ratio
+            const hoverRatio = hoverX / imageWidth;
+
+            // Determine the current area based on the ratio
+            let selectedZone = null;
+            for (const zone of hoverZones) {
+                if (hoverRatio <= zone.threshold) {
+                    selectedZone = zone;
+                    break;
+                }
+            }
+
+            if (selectedZone) {
+                // Show the corresponding popup image
+                hoverPopup.src = selectedZone.image;
+                hoverPopup.style.display = 'block'; // Show the popup
+                hoverPopup.style.top = `${event.clientY + 10}px`; // Set popup position
+                hoverPopup.style.left = `${event.clientX + 10}px`; // Set popup position
+
+                // Set the main image's click link
+                mainImage.style.cursor = 'pointer';
+                mainImage.onclick = () => {
+                    window.open(selectedZone.link, '_blank'); // Open in a new tab
+                };
+            }
+        });
+
+        // When the mouse leaves the main image, hide the popup
+        mainImage.addEventListener('mouseleave', () => {
+            hoverPopup.style.display = 'none'; // Hide the popup
+            mainImage.style.cursor = 'default'; // Reset the mouse style
+            mainImage.onclick = null; // Remove the click event
+        });
+    </script>
+</body>
+</html>
